@@ -1,3 +1,4 @@
 test_data/*.txt
+doc/*.log
 *.swp
 *.bak
