@@ -1,0 +1,84 @@
+\documentclass[12pt]{article}
+
+\usepackage{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}
+\usepackage{polski}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage{acronym}
+\usepackage{fancyhdr}
+\usepackage[usenames]{color}
+
+\hypersetup{
+  linkbordercolor={1 1 1},
+  urlbordercolor={1 1 1},
+  colorlinks=true
+}
+
+\pagestyle{fancy}
+\cfoot{}
+\rfoot{\thepage}
+
+\author{\textbf{Antoni Piechnik} \\ \\ prowadzący: \textbf{dr inż. Marek Gajęcki}}
+\title{
+Strukturyzacja słownika języka polskiego do pseudo-XML
+\begin{figure*}[h]
+  \centerline{
+    \includegraphics[scale=1.0]{images/logo_agh.pdf}
+  }
+\end{figure*}
+}
+
+\begin{document}
+
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+\section{Wstęp}
+\subsection{Wizja}
+Głównym zadaniem projektu jest poznanie struktury
+danych typu GIS (geographical information system), jak również analiza oraz
+wykorzystanie tego typu danych w wizualizacji danych meteorologicznych. System
+docelowo ma za zadanie przedstawienie sytuacji meteorologicznej na podstawie
+danych zbieranych na bieżąco jak również danych historycznych zgromadzonych
+poprzednio. System ma również mieć możliwość udostępniania danych/wizualizacji
+historycznych na życzenie użytkownika. Do celów badania wydajności systemu
+wykorzystywane będą dane z przynajmniej dwóch źródeł informacji
+meteorologicznej, podczas gdy system ma domyślnie obsługiwać 4-5 stacji
+narciarskich (po kilka punktów na każdą stację).
+
+\subsection{Ocena ryzyka}
+Technologia Django (w konsekwencji również Python) daje dobre perspektywy rozwoju:
+Python jest językiem bogatym w biblioteki (m.in. do Oracle) i jako język dynamiczny
+daje możliwość łatwego rozszerzania aplikacji. Dobrze rokuje także projekt GeoDjango
+(\url{http://geodjango.org/}) w związku z czym można sądzić, że nie napotkamy na
+większe problemy implementacyjne (związane z technologią).
+
+Dane zapisywane są przez
+\begin{verbatim}
+file = File.open(filename, "w")
+file.write(Marshal.dump(data))
+\end{verbatim}
+Aby je odczytać wystarczy
+\begin{verbatim}
+data = Marshal.load(File.read(filename))
+\end{verbatim}
+
+\section{Linki}
+\begin{description}
+  \item[Źródła (repozytorium Git)] \url{http://github.com/michalbugno/projekt-oszbd/}
+  \item[Projekt Django] \url{http://www.djangoproject.com/}
+  \item[Projekt GeoDjango] \url{http://geodjango.org/}
+  \item[API GoogleMaps] \url{http://code.google.com/apis/maps/documentation/}
+  \item[System kontroli wersji Git] \url{http://git-scm.com/}
+  \item[Python] \url{http://www.python.org/}
+  \item[Ruby] \url{http://www.ruby-lang.org/}
+  \item[Oracle Spatial] \url{http://download.oracle.com/docs/cd/B10501\_01/appdev.920/a96630/toc.htm}
+\end{description}
+
+\end{document}
+

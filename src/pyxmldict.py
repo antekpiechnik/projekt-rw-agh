@@ -5,20 +5,26 @@ import os
 import re
 import string
 
-file = open("test1.txt", "r")
+# read the test file
+file = open("../test_data/test1.txt", "r")
 data = file.read()
 data = data.split('##')
 
+# container for all the definitions found
 definitions = []
 
+# the main class for containing the definitions along with the examples/origin and so on
 class WordDefinition:
+
+    # the simplest of all constructors
     def __init__(self, name, definition):
         self.name = name
         self.definition = definition
         self.examples = []
         self.origin = ''
         self.additional_defs = []
-
+    
+    # method for printing, will be merged with a xml-generating output later on
     def pretty_print(self):
         print "**"
         print "Name: %s\nDefinition: %s" % (self.name, self.definition)
@@ -33,7 +39,8 @@ class WordDefinition:
             print "Aditional definitions:"
             for a_def in self.additional_defs:
                 a_def.pretty_print_tabbed()
-
+    
+    # a method for printing the additional definitions (tabbed)
     def pretty_print_tabbed(self):
         print "\t*"
         print "\tName: %s\n\tDefinition: %s" % (self.name, self.definition)
@@ -45,13 +52,14 @@ class WordDefinition:
             print "\tOrigin: %s" % self.origin
 
                 
-
-        
+# function extracting the name of the word being defined
 def extract_name(lines):
     word = lines[0].split(' ')[0]
     #print word
     return word
 
+
+# extracting a definition for the word
 def extract_definition(line):
     if not re.search('^[A-Z]', line):
         if '<' in line and '>' in line:
@@ -73,20 +81,23 @@ def extract_definition(line):
     else:
         return None
 
+# example extracting method
 def extract_example(line):
-    is_example = re.search('\s^[A-Z]([a-z]|.){2,}', line)
+    is_example = re.search('^[A-Z]([a-z]|.){2,}', line)
 
     if is_example:
         return line
     else:
         return None
 
+# find an origin for the word, using a given dictionary
 def extract_origin(line):
     if 'łc.' in line or 'gr.' in line:
         return line
     else:
         return None
 
+# recognize and extract additional definitions
 def extract_additional_def(line):
     extras = re.search('^[a-z].+[a-z]\.', line)
     if extras:
@@ -103,6 +114,7 @@ def extract_additional_def(line):
     else:
         return None
 
+# main carver
 def extract_from_lines(lines, name, definition):
     word_def = WordDefinition(name, definition)
     if lines:
@@ -110,7 +122,7 @@ def extract_from_lines(lines, name, definition):
             if line.startswith("D "):
                 line = line[2:]
             
-            if re.search('^[A-Z]', line) and '<' in line and '>' in line:
+            if re.search('^([a-z].+[a-z]\.)?\s?[A-Z]', line) and '<' in line and '>' in line:
                 a = extract_additional_def(line)
                 if a:
                     word_def.additional_defs.append(a)
@@ -120,7 +132,8 @@ def extract_from_lines(lines, name, definition):
                 if a:
                     word_def.examples.append(a)
     return word_def
-    
+
+
 for entry in data:
     entry = entry.split('\n')
     #print entry
@@ -140,8 +153,6 @@ for entry in data:
         if re.search('^[1-9]\.', line):
             numbering_indexes.append(entry.index(line))
 
-    print numbering_indexes
-
     name = extract_name(entry)
     
     if not numbering_indexes:
@@ -157,14 +168,15 @@ for entry in data:
             a = extract_origin(entry[len(entry)-1])
             if a:
                 word_def.origin = a
-            print "NORMAL %s" % word_def.name
             definitions.append(word_def)
 
     else:
         new_defs = []
         for ind in numbering_indexes:
-            print ind
             definition = extract_definition(entry[ind][3:])
+            if not definition:
+                definition = extract_definition(entry[ind+1])
+
             if definition:
                 if numbering_indexes.index(ind) == (len(numbering_indexes)-1):
                     new_defs.append(extract_from_lines(entry[ind+1:], name, definition))
@@ -179,7 +191,6 @@ for entry in data:
             for a_def in new_defs:
                 if a:
                     a_def.origin = a
-                print "MULTI %s" % a_def.name
                 definitions.append(a_def)
 
                 
