@@ -4,11 +4,16 @@
 import os
 import re
 import string
+import time
 
 # read the test file
 file = open("../test_data/test1.txt", "r")
 data = file.read()
 data = data.split('##')
+
+# stats
+unprocessed = 0
+start_time = time.time()
 
 # container for all the definitions found
 definitions = []
@@ -135,6 +140,8 @@ def extract_from_lines(lines, name, definition):
 
 
 for entry in data:
+    processed = False
+
     entry = entry.split('\n')
     #print entry
 
@@ -150,7 +157,7 @@ for entry in data:
     numbering_indexes = []
 
     for line in entry:
-        if re.search('^[1-9]\.', line):
+        if re.search('^[1-9]\.', line) or re.search('^[a-j]\)', line):
             numbering_indexes.append(entry.index(line))
 
     name = extract_name(entry)
@@ -168,12 +175,13 @@ for entry in data:
             a = extract_origin(entry[len(entry)-1])
             if a:
                 word_def.origin = a
+            processed = True
             definitions.append(word_def)
 
     else:
         new_defs = []
         for ind in numbering_indexes:
-            definition = extract_definition(entry[ind][3:])
+            definition = extract_definition(entry[ind][2:])
             if not definition:
                 definition = extract_definition(entry[ind+1])
 
@@ -191,14 +199,20 @@ for entry in data:
             for a_def in new_defs:
                 if a:
                     a_def.origin = a
+                processed = True
                 definitions.append(a_def)
 
-                
+duration = time.time() - start_time
 
 for definition in definitions:
     definition.pretty_print()
 
-            
+print '\n------'
+print 'Entries processed: %d' % len(data)
+print 'Definitions created: %d' % len(definitions)
+print 'Unprocessed: %d (%d)' % (unprocessed, int(unprocessed*100/float(len(data))))
+print 'Time: %dmin %ds' % (duration/60, duration%60)
+print '------\n'
         
 
    # numbered = re.findall("[1-9]\.", entry_text)
