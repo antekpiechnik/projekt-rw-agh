@@ -1,4 +1,5 @@
 test_data/*.txt
 doc/*.log
+doc/*.pdf
 *.swp
 *.bak

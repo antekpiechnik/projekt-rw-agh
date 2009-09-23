@@ -6,13 +6,16 @@ import re
 import string
 import time
 
+# dictionarie
+origin_bits = ['gr.', 'łc', 'fr.', 'niem.', 'ang.']
+
 # read the test file
-file = open("../test_data/test1.txt", "r")
+file = open("../test_data/pwn_utf.txt", "r")
 data = file.read()
 data = data.split('##')
 
 # stats
-unprocessed = 0
+unprocessed = []
 start_time = time.time()
 
 # container for all the definitions found
@@ -31,7 +34,7 @@ class WordDefinition:
     
     # method for printing, will be merged with a xml-generating output later on
     def pretty_print(self):
-        print "**"
+        print "\n**"
         print "Name: %s\nDefinition: %s" % (self.name, self.definition)
         if self.examples:
             print "Examples:"
@@ -41,13 +44,13 @@ class WordDefinition:
             print "Origin: %s" % self.origin
 
         if self.additional_defs:
-            print "Aditional definitions:"
+            print "Aditional definitions:\n"
             for a_def in self.additional_defs:
                 a_def.pretty_print_tabbed()
     
     # a method for printing the additional definitions (tabbed)
     def pretty_print_tabbed(self):
-        print "\t*"
+        print "\n\t*"
         print "\tName: %s\n\tDefinition: %s" % (self.name, self.definition)
         if self.examples:
             print "\tExamples:"
@@ -66,6 +69,9 @@ def extract_name(lines):
 
 # extracting a definition for the word
 def extract_definition(line):
+    #print line
+    word_re = re.compile('\w{2,}', re.U)
+    line = line.lstrip()
     if not re.search('^[A-Z]', line):
         if '<' in line and '>' in line:
             start_def = string.find(line, "<")
@@ -75,19 +81,32 @@ def extract_definition(line):
             if extras:
                 definition = "(%s) %s" % (str(extras.group()), definition)
             return definition
-        elif 'czas.' in line or 'rzecz.' in line or 'przym.' in line:
+        elif 'czas.' in line or 'rzecz.' in line or 'przym.' in line or 'przysłów.' in line:
             return line
         elif re.search('forma.{2,}\.', line):
             return line
         elif re.search('zwykle.*lm', line):
             return line
+        elif not re.search('^[A-Z]', line) and word_re.search(line):
+            if not line.startswith("blm") or not line.startswith("blp"):
+                return line
+        elif word_re.search(line):
+#            if not line.startswith("blm") or not line.startswith("blp"):
+            return line
+        elif 'w zn.' in line:
+            return line
         else:
             return None
+    elif line.startswith("D "):
+        return extract_definition(line[2:])
+    elif re.search('^I+\.?', line):
+        return extract_definition(line[len(re.search('^I+\.?', line).group()):])
     else:
         return None
 
 # example extracting method
 def extract_example(line):
+    line = line.lstrip()
     is_example = re.search('^[A-Z]([a-z]|.){2,}', line)
 
     if is_example:
@@ -97,13 +116,16 @@ def extract_example(line):
 
 # find an origin for the word, using a given dictionary
 def extract_origin(line):
-    if 'łc.' in line or 'gr.' in line:
-        return line
+    line = line.lstrip()
+    for bit in origin_bits:
+        if bit in line:
+            return line
     else:
         return None
 
 # recognize and extract additional definitions
 def extract_additional_def(line):
+    line = line.lstrip()
     extras = re.search('^[a-z].+[a-z]\.', line)
     if extras:
         extras = str(extras.group())
@@ -121,13 +143,14 @@ def extract_additional_def(line):
 
 # main carver
 def extract_from_lines(lines, name, definition):
+    d = False
     word_def = WordDefinition(name, definition)
     if lines:
         for line in lines:
-            if line.startswith("D "):
-                line = line[2:]
-            
-            if re.search('^([a-z].+[a-z]\.)?\s?[A-Z]', line) and '<' in line and '>' in line:
+            if re.search('(D )?^([a-z].+[a-z]\.)?\s?[A-Z]', line) and '<' in line and '>' in line:
+                if line.startswith("D "):
+                    line = line[2:]
+                    d = True
                 a = extract_additional_def(line)
                 if a:
                     word_def.additional_defs.append(a)
@@ -141,6 +164,7 @@ def extract_from_lines(lines, name, definition):
 
 for entry in data:
     processed = False
+    word_def = None
 
     entry = entry.split('\n')
     #print entry
@@ -161,15 +185,23 @@ for entry in data:
             numbering_indexes.append(entry.index(line))
 
     name = extract_name(entry)
+
+    #print '>> %s' % name
     
     if not numbering_indexes:
-        definition = extract_definition(entry[0][len(name)+1:])
+        definition = extract_definition(entry[0][len(name)+1:].lstrip())
         if definition:
+            if len(entry) > 1:
+                if extract_definition(entry[1]):
+                    definition = extract_definition(entry[1])
             word_def = extract_from_lines(entry[1:], name, definition)
         else:
-            definition = extract_definition(entry[1])
-            if definition:
-                word_def = extract_from_lines(entry[2:], name, definition)
+            if len(entry) > 1:
+                definition = extract_definition(entry[1])
+                if definition:
+                    word_def = extract_from_lines(entry[2:], name, definition)
+                else:
+                    word_def = extract_additional_def(entry[1])
         
         if word_def:
             a = extract_origin(entry[len(entry)-1])
@@ -183,7 +215,12 @@ for entry in data:
         for ind in numbering_indexes:
             definition = extract_definition(entry[ind][2:])
             if not definition:
-                definition = extract_definition(entry[ind+1])
+                if len(entry) >= ind+2:
+                    definition = extract_definition(entry[ind+1])
+            else:
+                if len(entry) >= ind+2:
+                    if extract_definition(entry[ind+1]):
+                        definition = extract_definition(entry[ind+1])
 
             if definition:
                 if numbering_indexes.index(ind) == (len(numbering_indexes)-1):
@@ -202,18 +239,29 @@ for entry in data:
                 processed = True
                 definitions.append(a_def)
 
+    if not processed:
+        unprocessed.append(name)
+
 duration = time.time() - start_time
 
-for definition in definitions:
-    definition.pretty_print()
+#for definition in definitions:
+    #definition.pretty_print()
 
 print '\n------'
 print 'Entries processed: %d' % len(data)
 print 'Definitions created: %d' % len(definitions)
-print 'Unprocessed: %d (%d)' % (unprocessed, int(unprocessed*100/float(len(data))))
+if unprocessed:
+    print 'Unprocessed: %d (%d%%)' % (len(unprocessed), int(len(unprocessed)*100/(len(data)*1.00)))
+    for element in unprocessed:
+        print '- %s' % element
 print 'Time: %dmin %ds' % (duration/60, duration%60)
 print '------\n'
-        
+
+i = 0
+for definition in definitions:
+    i += 1
+    if not i % 8500:
+        definition.pretty_print()
 
    # numbered = re.findall("[1-9]\.", entry_text)
 
