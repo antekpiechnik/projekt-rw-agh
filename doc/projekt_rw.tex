@@ -92,7 +92,14 @@ wejściowym ze słownikiem. Wyróżniono następujące tagi:
 \end{itemize}
 
 W celu rozszerzenia przykładów o te zupełnie osobno definiowane, autor projektu dodał
-nowy tag przyklad\_def
+nowy tag sub\_def.\\
+
+\begin{figure*}[h]
+  \centerline{
+    \includegraphics[scale=0.75]{images/structure.pdf}
+  }
+\end{figure*}
+
 
 Po zastosowaniu skryptu w.wym. wpis w słowniku powinien zamienić się w następujący:
 
@@ -112,34 +119,31 @@ Po zastosowaniu skryptu w.wym. wpis w słowniku powinien zamienić się w nastę
 
 \section{Struktura projektu}
 \subsection{Technologie}
-Skrypt został w całości napisany w języku Python, nie tylko ze względu na wygodę programowania
+Skrypt został w całości napisany w języku \textbf{Python}, nie tylko ze względu na wygodę programowania
 w dynamicznie typowanych językach, ale szczególnie z powodu niesłychanie potężnego narzędzia do obsługi
-wyrażeń regularnych, modułu re oraz string.
+wyrażeń regularnych, modułów \textbf{re} oraz \textbf{string}.
 
 \subsection{Rozwiązania}
-Skrypt wczytuje dane, rozdziela poszczególne wpisy a następnie stara się przewidzieć położenie konkretnych
-informacji we wpisie bazując m.in. na tym, czy jest on numerowany, czy definicja znajduje się w 
-nagłówku wpisu. 
-Skrypt następnie korzysta z przygotowywanych metod wykrywających czy konkretne elementy wpisu są
-definicją, przykładem, przykłado-definicją czy też opisem pochodzenia słowa
+Skrypt wczytuje dane, rozdziela poszczególne wpisy a następnie analizuje ich strukturę starając się wydzielić
+odpowiednie elementy struktury (czy jest to definicja, wyraz etc.) a następnie na bazie ich położenia stara 
+się przyporządkować i podzielić je w odpowiedni sposób, bazując m.in. na tym, czy jest on numerowany, czy definicja znajduje się w 
+nagłówku wpisu.
+Skrypt korzysta z przygotowywanych metod wykrywających czy konkretne elementy wpisu są definicją, przykładem, przykłado-definicją 
+czy też opisem pochodzenia słowa. Do implementacji tychże metod posłużyły moduły wbudowane w język Python (w dużej mierze wspomniane
+wcześniej \textit{re} oraz \textit{string}.
 
 \subsection{Problemy}
 Najwięcej problemów napotkano z powodu niejednoznacznej struktury podanego pliku ze słownikiem,
-przez co nie można było zastosować utrwalonych schematów file-carvingu.
+przez co nie można było zastosować utrwalonych schematów file-carvingu i dopasowywać skrypt do różnych
+napotkanych sposobów przechowania definicji słowa w pliku słownika.
 
 \section{Rezultaty}
-Skrypt przetwarza słownik w paręnaście sekund. W celu wydobycia informacji o jego (przynajmniej
-pozornej) poprawności wprowadzono prosty system statystyk, które m.in. badają ile słów nie zostało
-przetworzonych w wyniku niedokładnej implementacji.
+Skrypt przetwarza słownik (ponad 72 tys. haseł) w niecałe 20 sekund, tworząc przy tym ponad 100 tysięcy osobnych wpisów.
+W celu wydobycia informacji o jego (przynajmniej częsciowej) poprawności wprowadzono prosty system statystyk, które m.in. 
+badają ile słów nie zostało przetworzonych w wyniku niekompletnego zasobu danych.
 
-Dotychczas otrzymywaliśmy wyniki na poziomie ok 80\% przetworzonych haseł słownikowych, zw większości
-z bardzo pozytywnym skutkiem. Poniżej zamieszczony jest przykładowy plik wynikowy.
-
-\section{Linki}
-\begin{description}
-  \item[System kontroli wersji Git] \url{http://git-scm.com/}
-  \item[Python] \url{http://www.python.org/}
-\end{description}
+Dotychczas otrzymywaliśmy wyniki na poziomie ok 99\% przetworzonych haseł słownikowych, dalsza wersja skryptu osiągnęła
+nawet wszystkie słowa bez 10 z całego słownika.
 
 \end{document}
 

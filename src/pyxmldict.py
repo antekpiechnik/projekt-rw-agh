@@ -7,7 +7,7 @@ import string
 import time
 
 # dictionarie
-origin_bits = ['gr.', 'łc', 'fr.', 'niem.', 'ang.']
+origin_bits = ['gr.', 'łc.', 'fr.', 'niem.', 'ang.']
 
 # read the test file
 file = open("../test_data/pwn_utf.txt", "r")
@@ -70,6 +70,8 @@ def extract_name(lines):
 # extracting a definition for the word
 def extract_definition(line):
     #print line
+    #if line.startswith("<domy"):
+    #    print '>> %s' % line
     word_re = re.compile('\w{2,}', re.U)
     line = line.lstrip()
     if not re.search('^[A-Z]', line):
@@ -88,11 +90,11 @@ def extract_definition(line):
         elif re.search('zwykle.*lm', line):
             return line
         elif not re.search('^[A-Z]', line) and word_re.search(line):
-            if not line.startswith("blm") or not line.startswith("blp"):
+            if not line.startswith("blm") or not line.startswith("blp") or not line.startswith("lm") or not line.startswith("lp"):
                 return line
         elif word_re.search(line):
-#            if not line.startswith("blm") or not line.startswith("blp"):
-            return line
+            if not line.startswith("blm") or not line.startswith("blp") or not line.startswith("lm") or not line.startswith("lp"):
+                return line
         elif 'w zn.' in line:
             return line
         else:
@@ -213,13 +215,13 @@ for entry in data:
     else:
         new_defs = []
         for ind in numbering_indexes:
-            definition = extract_definition(entry[ind][2:])
+            definition = extract_definition(entry[ind][1:])
             if not definition:
                 if len(entry) >= ind+2:
                     definition = extract_definition(entry[ind+1])
             else:
                 if len(entry) >= ind+2:
-                    if extract_definition(entry[ind+1]):
+                    if extract_definition(entry[ind+1]) and not ind+1 in numbering_indexes:
                         definition = extract_definition(entry[ind+1])
 
             if definition:
@@ -260,22 +262,9 @@ print '------\n'
 i = 0
 for definition in definitions:
     i += 1
-    if not i % 8500:
+    if not i % 6881:
+        definition.pretty_print()
+    if definition.name == 'przypuszczenie' or definition.name == 'aberracja':
         definition.pretty_print()
 
-   # numbered = re.findall("[1-9]\.", entry_text)
-
-    #if not numbered:
-    #    cont = process_part(entry_text, word)
-    #    cont.pretty_print()
-    #else:
-    #    numbering_indexes = []
-    #    for numbering in numbered:
-    #        
-    #        print "**** %s ***" % bullet
-    #        ay = ay[string.find(ay, bullet)+2:]
-    #        cont = process_bit(ay, word)
-    #        cont.pretty_print()
-    #        
-    #print ay
 
