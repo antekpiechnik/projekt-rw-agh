@@ -1,5 +1,6 @@
 test_data/*.txt
 doc/*.log
 doc/*.pdf
+src/*.txt
 *.swp
 *.bak
