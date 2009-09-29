@@ -14,14 +14,14 @@
 \hypersetup{
   linkbordercolor={1 1 1},
   urlbordercolor={1 1 1},
-  colorlinks=true
+  colorlinks=false
 }
 
 \pagestyle{fancy}
 \cfoot{}
 \rfoot{\thepage}
 
-\author{Projekt z przedmiotu Reprezentacja Wiedzy \\ \\ \textbf{Antoni Piechnik} \\ Informatyka rok IV \\ \\ prowadzący: \textbf{dr inż. Marek Gajęcki}}
+\author{Projekt z przedmiotu \\ \textbf{Reprezentacja Wiedzy} \\ \\ \textbf{Antoni Piechnik} \\ Informatyka rok IV \\ \\ prowadzący: \textbf{dr inż. Marek Gajęcki}}
 \title{
 Strukturyzacja słownika języka polskiego do pseudo-XML. \\
 \begin{figure*}[h]
@@ -40,19 +40,29 @@ Strukturyzacja słownika języka polskiego do pseudo-XML. \\
 
 \section{Wstęp}
 \subsection{Cel Projektu}
+
 Głownym celem projektu było stworzenie narzędzia do konwersji wypisu ze słownika
-języka polskiego PWN do struktury typu XML o zadanej przez prowadzącego. Projekt
+języka polskiego PWN do struktury typu XML o zadanej przez prowadzącego formie. Projekt
 miał zaznajomić nas zarówno z formą słownika jak również problemami związanymi z
-jego konwersją, na które napotkaliśmy.
+konwersją nieregularnych źródeł tekstu.
+
 \subsection{Wizja}
+
 Projekt zaprojektowany został jako skrypt napisany w dynamicznie typowanym języku
 Python, który nie tylko pozwala na sprawne przetwarzanie dużych danych, ale również
-na wygodną pracę z tekstem. Skrypt składa sie z dwóch większych modułów,które
-razem odpowiadają za załadowanie tekstu słownika a następnie zparsowanie go do
-odpowiednich struktur.
+na wygodną pracę z tekstem. Skrypt składa sie z modułu, który uruchamiany z linii
+poleceń odpowiada za załadowanie tekstu słownika a następnie zparsowanie go do
+odpowiednich struktur, następnie konwersję do pseudo-XML oraz wygenerowanie:
+
+\begin{itemize}
+  \item pliku wyjściowego
+  \item prostej statystyki związanej z pracą skryptu
+\end{itemize}
 
 \section{Struktura haseł słownikowych}
+
 \subsection{Ogólne założenia}
+
 Hasła w słowniku języka polskiego PWN z założenia powinny zawierać:
 \begin{itemize}
   \item wyraz definiowany
@@ -60,7 +70,7 @@ Hasła w słowniku języka polskiego PWN z założenia powinny zawierać:
   \item definicję
   \item zdania przykładowe (niekoniecznie)
   \item przykłady zastosowań wyrazu w idiomach, nazwach specjalnych etc.
-  \item pochodzenie słowa
+  \item pochodzenie słowa (niekoniecznie)
 \end{itemize}
 Przykładem takiego słowa jest np.:
 
@@ -76,8 +86,9 @@ n.-łc.
 
 \subsection{Struktury napotkane w slowniku}
 Hasła w słowniku są w zdecydowanej większości poprawnie ustrukturyzowane, jednak
-istnieje wiele przypadków nie do końca poprawnych strukturalnie definicji, co 
-sprawiało bardzo dużo kłopotów przy implementacji skryptu.
+istnieje wiele przypadków niezgodnych z ogólnymi założeniami struktur definicji, co 
+skutecznie utrudniało implementację skryptu, który musiał przewidywać maksymalnie dużo
+ewentualności (choć nie do końca możliwe było obsłużenie wszystkich).
 
 \section{Zadana struktura słownika}
 Zadana przez prowadzącego struktura słownika w postaci konkretnych tagów pseudo-xml,
@@ -92,14 +103,7 @@ wejściowym ze słownikiem. Wyróżniono następujące tagi:
 \end{itemize}
 
 W celu rozszerzenia przykładów o te zupełnie osobno definiowane, autor projektu dodał
-nowy tag sub\_def.\\
-
-\begin{figure*}[h]
-  \centerline{
-    \includegraphics[scale=0.75]{images/structure.pdf}
-  }
-\end{figure*}
-
+nowy tag \textbf{sub\_def}.\\
 
 Po zastosowaniu skryptu w.wym. wpis w słowniku powinien zamienić się w następujący:
 
@@ -116,6 +120,16 @@ Po zastosowaniu skryptu w.wym. wpis w słowniku powinien zamienić się w nastę
 <pochodzenie>n.-łc.</pochodzenie>
 
 \end{verbatim}
+
+\subsection{Ostateczna struktura przetworzonego wpisu}
+
+
+\begin{figure*}[h]
+  \centerline{
+    \includegraphics[scale=0.75]{images/structure.pdf}
+  }
+\end{figure*}
+
 
 \section{Struktura projektu}
 \subsection{Technologie}
@@ -134,13 +148,13 @@ wcześniej \textit{re} oraz \textit{string}.
 
 \subsection{Problemy}
 Najwięcej problemów napotkano z powodu niejednoznacznej struktury podanego pliku ze słownikiem,
-przez co nie można było zastosować utrwalonych schematów file-carvingu i dopasowywać skrypt do różnych
-napotkanych sposobów przechowania definicji słowa w pliku słownika.
+przez co nie można było zastosować utrwalonych schematów file-carvingu, a dopasowywać skrypt do różnych
+napotkanych sposobów przechowania definicji poszczególnych słów w pliku słownika.
 
 \section{Rezultaty}
 Skrypt przetwarza słownik (ponad 72 tys. haseł) w niecałe 20 sekund, tworząc przy tym ponad 100 tysięcy osobnych wpisów.
 W celu wydobycia informacji o jego (przynajmniej częsciowej) poprawności wprowadzono prosty system statystyk, które m.in. 
-badają ile słów nie zostało przetworzonych w wyniku niekompletnego zasobu danych.
+badają ile słów nie zostało przetworzonych w wyniku niekompletnego zasobu instrukcji.
 
 Dotychczas otrzymywaliśmy wyniki na poziomie ok 99\% przetworzonych haseł słownikowych, dalsza wersja skryptu osiągnęła
 nawet wszystkie słowa bez 10 z całego słownika.

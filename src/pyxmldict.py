@@ -257,15 +257,6 @@ def dict2xml(input_file=None, output_file='output.txt'):
         #for definition in definitions:
             #definition.pretty_print()
 
-        print '\n------'
-        print 'Entries processed: %d' % len(data)
-        print 'Definitions created: %d' % len(definitions)
-        if unprocessed:
-            print 'Unprocessed: %d (%.03f%%)' % (len(unprocessed), len(unprocessed)*100/(len(data)*1.00))
-            #for element in unprocessed:
-            #    print '- %s' % element
-        print 'Time: %dmin %ds' % (duration/60, duration%60)
-        print '------\n'
 
         i = 0
         
@@ -275,7 +266,7 @@ def dict2xml(input_file=None, output_file='output.txt'):
 
         for definition in definitions:
             i += 1
-            if not i % 6881:
+            if not i % 5000:
                 print definition.pretty_print()
             if definition.name == 'przypuszczenie' or definition.name == 'aberracja':
                 print definition.pretty_print()
@@ -283,6 +274,15 @@ def dict2xml(input_file=None, output_file='output.txt'):
 
         file.close()
 
+        print '\n------'
+        print 'Entries processed: %d' % len(data)
+        print 'Definitions created: %d' % len(definitions)
+        if unprocessed:
+            print 'Unprocessed: %d (%.03f%%)' % (len(unprocessed), len(unprocessed)*100/(len(data)*1.00))
+            #for element in unprocessed:
+            #    print '- %s' % element
+        print 'Time: %dmin %ds' % (duration/60, duration%60)
+        print '------\n'
 
 
 if __name__ == "__main__":
